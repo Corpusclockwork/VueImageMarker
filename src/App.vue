@@ -1,17 +1,41 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
 import Image from './components/Image.vue';
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, useTemplateRef } from 'vue'
+
+// 1. mount everything 
+// 2. Go through the mounted marker and use template ref to style them /
+// 3. Profit  ?
 
 const imageName = ref("./alien_bloc_logo.jpg");
-const markers = ref(new Set());
+
+function markerCanvas(markerRef) {
+    const templateCanvas = useTemplateRef(markerRef);
+    var ctx = templateCanvas.value.getContext("2d");
+    ctx.beginPath();
+    ctx.rect(0, 0, 150, 100);
+    ctx.stroke();
+}
+
+onMounted(() => {
+    markerCanvas("marker-1") // do this for all markers ?
+})
+
+const markers = ref([{
+    id: 1, 
+    x: 50, 
+    y: 50,  
+    title:""
+}]);
+
+
 </script>
 
 <template>
     <Image 
         :imageName="imageName"
         :markers="markers"
-    ></Image>
+    >
+    </Image> 
 </template>
 
 <style scoped>
