@@ -1,6 +1,6 @@
 # Vue Image Marker
 
-I made a Vue equivalent of this (https://www.npmjs.com/package/react-image-marker) (or an alternative version of this (https://github.com/jarvisniu/vue-image-marker) I suppose) for one of my other projects. The project is structured using Vue Composition API, which is apparently the way forward when it comes to Vue. I had never used it before so built this to get some experince in it. 
+I made a Vue equivalent of this (https://www.npmjs.com/package/react-image-marker) (or an alternative version of this (https://github.com/jarvisniu/vue-image-marker) I suppose) for one of my other projects. The project is structured using Vue Composition API, which is apparently the way forward when it comes to Vue. I had never used it before so built this to get some experience in it. 
 
 ## Functionality
 The component is called ImageMarker, and it takes the neccessary props, imageName, canvasReference and markers. In the parent component you are using the ImageMarker in, you can use the functions calculateMarkerXPosition, calculateMarkerYPosition, calculateMarkerWidth, calculateMarkerHeight, and calculateMarkerWidthForCurvedShape. You use these functions in the main component to  react to changes in the image size. In the component where the ImageMarker is being used, define the function canvasCodeFunction, which should loop through all the markers and define what each marker should look like using a Path2D object. Here is an example: 
@@ -20,4 +20,29 @@ function canvasCodeFunction(ctx){
 };
 ```
 ## Adding Markers
-To add markers on click, you can use the addMarkersOnClick prop, and then specify the width and height of new Markers using newMarkersWidth, newMarkersHeight.
+To add markers on click, you can use the addMarkersOnClick prop, and then specify the width and height of new Markers using newMarkersWidth, newMarkersHeight. You then need to deine a function in the parent app that you call when a user clicks on the canvas, which I have called AddNew Marker. This function then calls the canvasCodeFunction.
+
+```
+function addNewMarker(markerX, markerY, ctx){
+    markers.value.push({
+        markerLocationX: markerX, 
+        markerLocationY: markerY,  
+        markerWidth: 5,
+        markerHeight: 5
+    });
+    canvasCodeFunction(ctx)
+};
+```
+
+When calling ImageMarker, you also need to make sure that you include addMarkersOnClick to be true (the default is false), and also that you include the onClick emit to call your addNewMarker function when a new marker needs to be added.
+```
+:addMarkersOnClick="true"
+@onClick="addNewMarker"
+```
+
+## Examples
+
+Here are some example marker designs on a genric image:
+### Smiley face 
+### Star 
+### Different colour circles
