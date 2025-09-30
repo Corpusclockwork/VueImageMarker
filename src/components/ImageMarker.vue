@@ -12,48 +12,70 @@
         },
         markers: {
             type: Array,
-            default: [],
             required: true
-        }
+        },
+        addMarkersOnClick: {
+            type: Boolean,
+            default: false
+        },
     });
 
     defineExpose({
-        calculateMarkerXPosition, 
-        calculateMarkerYPosition, 
-        calculateMarkerWidth, 
-        calculateMarkerHeight, 
-        calculateMarkerWidthForCurvedShape
+        calculateMarkerXPositionRect, 
+        calculateMarkerYPositionRect, 
+        calculateMarkerXPositionArc,
+        calculateMarkerYPositionArc,
+        calculateMarkerWidthRect, 
+        calculateMarkerHeightRect,
+        calculateMarkerWidthArc,
+        calculateMarkerHeightArc
     });
     
-    const emit = defineEmits(['callCanvasCodeFunction'])
+    const emit = defineEmits(['callCanvasCodeFunction', 'onClick'])
 
     const imageWidth = ref(0);
     const imageHeight = ref(0);    
     const templateCanvas = useTemplateRef(props.canvasReference);
 
-    function calculateMarkerXPosition (percentageAcross, markerWidth){
-        // divide the marker width by 2 so that the marker is centered at the correct point
-        return imageWidth.value*(percentageAcross/100) - (markerWidth/2); 
+    function calculateMarkerXPositionRect(percentageAcross, markerWidth){
+        return imageWidth.value*((percentageAcross/100) - (markerWidth/200)); 
     }
-    function calculateMarkerYPosition(percentageDown, markerHeight){
-        // divide the marker height by 2 so that the marker is centered at the correct point
-        return imageHeight.value*(percentageDown/100) - (markerHeight/2);
+    function calculateMarkerYPositionRect(percentageDown, markerHeight){
+        return imageHeight.value*((percentageDown/100)- (markerHeight/200));
     }
-    function calculateMarkerWidthForCurvedShape(markerWidth){
-        return (imageWidth.value*(markerWidth/100))/2;
-        
+    function calculateMarkerXPositionArc(percentageAcross){
+        return imageWidth.value*((percentageAcross/100)); 
     }
-    function calculateMarkerWidth(markerWidth){
+    function calculateMarkerYPositionArc(percentageDown){
+        return imageHeight.value*((percentageDown/100));
+    }
+    function calculateMarkerWidthRect(markerWidth){
         return imageWidth.value*(markerWidth/100);
     }
-    function calculateMarkerHeight(markerHeight){
-        return imageWidth.value*(markerHeight/100);
+    function calculateMarkerHeightRect(markerHeight){
+        return imageHeight.value*(markerHeight/100);
+    }
+    function calculateMarkerWidthArc(markerWidth){
+        return (imageWidth.value*(markerWidth/100))/2;
+    }
+    function calculateMarkerHeightArc(markerHeight){
+        return (imageHeight.value*(markerHeight/100))/2;
     }
 
     function drawMarkers(){
-        var ctx = templateCanvas.value.getContext("2d");
+        const ctx = templateCanvas.value.getContext("2d");
         emit('callCanvasCodeFunction', ctx);
     }
+
+    function addMarker(event){
+        if(!props.addMarkersOnClick){
+            return;
+        }
+        const newMarkerX = (event.offsetX / imageWidth.value) * 100;
+        const newMarkerY = (event.offsetY / imageHeight.value) * 100;
+        const ctx = templateCanvas.value.getContext("2d");
+        emit('onClick', newMarkerX, newMarkerY, ctx);
+    };
     
     // I want to resize based on the actual image, not the window size, so it seems better to use this rather than a 'Window: resize' event
     function onResizeObserver(entries){
@@ -84,6 +106,7 @@
             :ref=canvasReference
             :width=imageWidth
             :height=imageHeight
+            @click="addMarker"
         ></canvas>
     </div>
 </template>
