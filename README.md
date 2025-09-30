@@ -12,7 +12,8 @@ The component is called ImageMarker, and it takes the neccessary props, imageNam
 `calculateMarkerWidthArc`, and
 `calculateMarkerHeightArc`. 
 You use these functions in the main component to  react to changes in the image size. In the component where the ImageMarker is being used, define the function canvasCodeFunction, which should loop through all the markers and define what each marker should look like. Here is an example: 
-```
+
+``` javascript
 function canvasCodeFunction(ctx){
     for (let marker of markers.value){
         const shape = new Path2D();
@@ -27,11 +28,12 @@ function canvasCodeFunction(ctx){
     }
 };
 ```
+
 This will make all the markers red rectangles of the given width and height.
 ## Adding Markers
 To add markers on click, you can use the addMarkersOnClick prop, and then specify the width and height of new Markers using newMarkersWidth, newMarkersHeight. You then need to deine a function in the parent app that you call when a user clicks on the canvas, which I have called AddNew Marker. This function then calls the canvasCodeFunction.
 
-```
+``` javascript
 function addNewMarker(markerX, markerY, ctx){
     markers.value.push({
         markerLocationX: markerX, 
@@ -44,18 +46,19 @@ function addNewMarker(markerX, markerY, ctx){
 ```
 
 When calling ImageMarker, you also need to make sure that you include addMarkersOnClick to be true (the default is false), and also that you include the onClick emit to call your addNewMarker function when a new marker needs to be added.
-```
+
+``` javascript
 :addMarkersOnClick="true"
 @onClick="addNewMarker"
 ```
 
 ## Examples
-
-Here are some example marker designs on a genric image:
+Here are some example marker designs on a generic image. The markers are added using the 'click to add Marker' functionality.
 ### Smiley face 
 <img width="1052" height="703" alt="smiley_faces" src="https://github.com/user-attachments/assets/e4980301-f87c-492a-9c08-d4181c759bef" />
 The function to draw the markers is:
-```
+
+``` javascript
 function canvasCodeFunction(ctx){
     for (let marker of markers.value){
         const shape = new Path2D();
@@ -69,8 +72,7 @@ function canvasCodeFunction(ctx){
         ctx.strokeStyle = "black";
         ctx.stroke(shape);
         ctx.fillStyle = "yellow";
-        ctx.fill(shape); 
-
+        ctx.fill(shape);
         const eye1 = new Path2D();
         eye1.arc(
             imageMarker.value.calculateMarkerXPositionArc(marker.markerLocationX - 2,marker.markerWidth),
@@ -82,7 +84,6 @@ function canvasCodeFunction(ctx){
         ctx.stroke(eye1);
         ctx.fillStyle = "black";
         ctx.fill(eye1);
-
         const eye2 = new Path2D();
         eye2.arc(
             imageMarker.value.calculateMarkerXPositionArc(marker.markerLocationX + 2,marker.markerWidth),
@@ -94,8 +95,75 @@ function canvasCodeFunction(ctx){
         ctx.stroke(eye2);
         ctx.fillStyle = "black";
         ctx.fill(eye2);
+        const mouth = new Path2D();
+        mouth.arc(
+            imageMarker.value.calculateMarkerXPositionArc(marker.markerLocationX,marker.markerWidth),
+            imageMarker.value.calculateMarkerYPositionArc(marker.markerLocationY+2,marker.markerHeight),
+            imageMarker.value.calculateMarkerWidthArc(marker.markerWidth - 6),
+            0,
+            Math.PI
+        );
+        ctx.stroke(mouth);
+        ctx.fillStyle = "red";
+        ctx.fill(mouth);
+        shape.rect(
+            imageMarker.value.calculateMarkerXPositionRect(marker.markerLocationX,marker.markerWidth),
+            imageMarker.value.calculateMarkerYPositionRect(marker.markerLocationY,marker.markerHeight),
+            imageMarker.value.calculateMarkerWidthRect(marker.markerWidth),
+            imageMarker.value.calculateMarkerHeightRect(marker.markerHeight)
+        )
     }
 };
 ```
-### Star 
-### Different colour circles
+
+### Hearts
+<img width="1157" height="772" alt="image" src="https://github.com/user-attachments/assets/5a4dac72-e866-481c-b869-32e7c58ce414" />
+The function to draw the markers is:
+
+``` javascript
+function canvasCodeFunction(ctx){
+    for (let marker of markers.value){
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "red";
+        let x = imageMarker.value.calculateMarkerXPositionArc(marker.markerLocationX,0);
+        let y = imageMarker.value.calculateMarkerYPositionArc(marker.markerLocationY,0);
+        ctx.moveTo(x, y);
+        ctx.beginPath();
+        ctx.bezierCurveTo(x, y-5, x-5, y-15, x-25, y-15);
+        ctx.bezierCurveTo(x-55, y-15, x-55, y+15, x-55, y+15);
+        ctx.bezierCurveTo(x-55, y+40, x-35, y+50, x, y+80);
+        ctx.bezierCurveTo(x+45, y+60, x+55, y+40, x+55, y+15);
+        ctx.bezierCurveTo(x+55, y+15, x+55, y-15, x+25, y-15);
+        ctx.bezierCurveTo(x+10, y-15, x, y-5, x, y-5);
+        ctx.fill();
+    }
+};
+```
+
+### Different colour and different colour rectanangles
+<img width="1151" height="772" alt="image" src="https://github.com/user-attachments/assets/47de05f5-62e6-432c-9fc0-804b3d9bc914" />
+The function to draw the markers is:
+
+``` javascript
+function canvasCodeFunction(ctx){
+    let i = 0;
+    let size = 0;
+    let colours = ["red", "blue", "orange", "green", "yellow", "#03456b", "#02ac70", "pink" ];
+    for (let marker of markers.value){
+        const shape = new Path2D();
+        shape.rect(
+            imageMarker.value.calculateMarkerXPositionRect(marker.markerLocationX,marker.markerWidth),
+            imageMarker.value.calculateMarkerYPositionRect(marker.markerLocationY,marker.markerHeight),
+            imageMarker.value.calculateMarkerWidthRect(marker.markerWidth + size),
+            imageMarker.value.calculateMarkerHeightRect(marker.markerHeight + size)
+        )
+        let fillStyleString = colours[i % colours.length];
+        size++;
+        i++;
+        ctx.fillStyle = fillStyleString;
+        ctx.stroke(shape);
+        ctx.fill(shape);
+    }
+};
+```
+
