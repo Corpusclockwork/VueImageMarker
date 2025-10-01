@@ -1,6 +1,6 @@
 # Vue Image Marker
 
-I made a Vue equivalent of this (https://www.npmjs.com/package/react-image-marker) (or an alternative version of this (https://github.com/jarvisniu/vue-image-marker) I suppose) for one of my other projects. The project is structured using Vue Composition API, which is apparently the way forward when it comes to Vue. I had never used it before so built this to get some experience in it. 
+I made a Vue equivalent of this (https://www.npmjs.com/package/react-image-marker) (or an alternative version of this (https://github.com/jarvisniu/vue-image-marker) I suppose) in one of my other projects (https://github.com/Corpusclockwork/alien_top_logger). I've remade this component using  Vue Composition API, which is apparently the way forward when it comes to Vue. I had never used it before so built this to get some experience.
 
 ## Functionality
 The component is called ImageMarker, and it takes the neccessary props, imageName, canvasReference and markers. In the parent component you are using the ImageMarker in, you can use the functions               `calculateMarkerXPositionRect`, 
@@ -10,8 +10,7 @@ The component is called ImageMarker, and it takes the neccessary props, imageNam
 `calculateMarkerWidthRect`, 
 `calculateMarkerHeightRect`,
 `calculateMarkerWidthArc`, and
-`calculateMarkerHeightArc`. 
-You use these functions in the main component to  react to changes in the image size. In the component where the ImageMarker is being used, define the function canvasCodeFunction, which should loop through all the markers and define what each marker should look like. Here is an example: 
+`calculateMarkerHeightArc` to calculate the position and relative size of the markers based on the size of the image. The markers should change shape and size depending on the size of the image, so that they remain a consistent size in relation to the image size. In the component where the ImageMarker is being used, define the function canvasCodeFunction, which should loop through all the markers and define what each marker should look like. Here is an example: 
 
 ``` javascript
 function canvasCodeFunction(ctx){
@@ -20,10 +19,12 @@ function canvasCodeFunction(ctx){
         shape.rect(
             imageMarker.value.calculateMarkerXPositionRect(marker.markerLocationX,marker.markerWidth),
             imageMarker.value.calculateMarkerYPositionRect(marker.markerLocationY,marker.markerHeight),
-            imageMarker.value.calculateMarkerWidthRect(marker.markerWidth + size),
-            imageMarker.value.calculateMarkerHeightRect(marker.markerHeight + size)
+            imageMarker.value.calculateMarkerWidthRect(marker.markerWidth ),
+            imageMarker.value.calculateMarkerHeightRect(marker.markerHeight)
         )
         ctx.strokeStyle = "red";
+        ctx.fillStyle = "red";
+        ctx.fill(shape);
         ctx.stroke(shape);
     }
 };
@@ -31,7 +32,7 @@ function canvasCodeFunction(ctx){
 
 This will make all the markers red rectangles of the given width and height.
 ## Adding Markers
-To add markers on click, you can use the addMarkersOnClick prop, and then specify the width and height of new Markers using newMarkersWidth, newMarkersHeight. You then need to deine a function in the parent app that you call when a user clicks on the canvas, which I have called AddNew Marker. This function then calls the canvasCodeFunction.
+To add markers on click, you can use the addMarkersOnClick prop. You then need to deine a function in the parent component that you call when a user clicks on the canvas, which I have called addNewMarker. This function then calls the canvasCodeFunction.
 
 ``` javascript
 function addNewMarker(markerX, markerY, ctx){
@@ -53,7 +54,7 @@ When calling ImageMarker, you also need to make sure that you include addMarkers
 ```
 
 ## Examples
-Here are some example marker designs on a generic image. The markers are added using the 'click to add Marker' functionality.
+Here are some example marker designs on a generic image. All the markers are added using the 'click to add Marker' functionality, except for the markers at (0,0) and at (70,70), which I have in place to check that the markers are centered correctly, and also that they are the size and shape that I expect them to be.
 ### Smiley face 
 <img width="1052" height="703" alt="smiley_faces" src="https://github.com/user-attachments/assets/e4980301-f87c-492a-9c08-d4181c759bef" />
 The function to draw the markers is:
@@ -98,7 +99,7 @@ function canvasCodeFunction(ctx){
         const mouth = new Path2D();
         mouth.arc(
             imageMarker.value.calculateMarkerXPositionArc(marker.markerLocationX,marker.markerWidth),
-            imageMarker.value.calculateMarkerYPositionArc(marker.markerLocationY+2,marker.markerHeight),
+            imageMarker.value.calculateMarkerYPositionArc(marker.markerLocationY + 2,marker.markerHeight),
             imageMarker.value.calculateMarkerWidthArc(marker.markerWidth - 6),
             0,
             Math.PI
@@ -140,7 +141,7 @@ function canvasCodeFunction(ctx){
 };
 ```
 
-### Different colour and different colour rectanangles
+### Different colour and different size rectangles
 <img width="1151" height="772" alt="image" src="https://github.com/user-attachments/assets/47de05f5-62e6-432c-9fc0-804b3d9bc914" />
 The function to draw the markers is:
 
