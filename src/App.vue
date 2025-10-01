@@ -13,8 +13,8 @@ const markers = ref([
         markerHeight: 10
     },
     {
-        markerLocationX: 80, 
-        markerLocationY: 80,  
+        markerLocationX: 70, 
+        markerLocationY: 70,  
         markerWidth: 10,
         markerHeight: 10
     }
@@ -26,10 +26,12 @@ function canvasCodeFunction(ctx){
         shape.rect(
             imageMarker.value.calculateMarkerXPositionRect(marker.markerLocationX,marker.markerWidth),
             imageMarker.value.calculateMarkerYPositionRect(marker.markerLocationY,marker.markerHeight),
-            imageMarker.value.calculateMarkerWidthRect(marker.markerWidth + size),
-            imageMarker.value.calculateMarkerHeightRect(marker.markerHeight + size)
+            imageMarker.value.calculateMarkerWidthRect(marker.markerWidth),
+            imageMarker.value.calculateMarkerHeightRect(marker.markerHeight)
         )
         ctx.strokeStyle = "red";
+        ctx.fillStyle = "red";
+        ctx.fill(shape);
         ctx.stroke(shape);
     }
 };

@@ -77,7 +77,7 @@
         emit('onClick', newMarkerX, newMarkerY, ctx);
     };
     
-    // I want to resize based on the actual image, not the window size, so it seems better to use this rather than a 'Window: resize' event
+    // I want to resize based on the actual image size, not the window size, so it seems better to use this rather than a 'Window: resize' event
     function onResizeObserver(entries){
         const [entry] = entries
         const {width, height} = entry.contentRect;
@@ -92,7 +92,6 @@
     onUpdated(() => {
         drawMarkers();
     });
-
 </script>
 <template>
     <div class="imageMarkerCanvasContainerClass">
